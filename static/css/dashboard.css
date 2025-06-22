@@ -1,0 +1,256 @@
+/* Dashboard Styles */
+body {
+    background-color: #f8f9fc;
+    font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+}
+
+.border-left-primary {
+    border-left: 0.25rem solid #4e73df !important;
+}
+
+.border-left-success {
+    border-left: 0.25rem solid #1cc88a !important;
+}
+
+.border-left-info {
+    border-left: 0.25rem solid #36b9cc !important;
+}
+
+.border-left-warning {
+    border-left: 0.25rem solid #f6c23e !important;
+}
+
+.text-xs {
+    font-size: .7rem;
+}
+
+.shadow {
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15) !important;
+}
+
+.card {
+    border: none;
+    border-radius: 0.5rem;
+}
+
+.card-header {
+    background-color: #f8f9fc;
+    border-bottom: 1px solid #e3e6f0;
+}
+
+/* Status Indicators */
+.status-online {
+    color: #1cc88a;
+}
+
+.status-offline {
+    color: #e74a3b;
+}
+
+.status-warning {
+    color: #f6c23e;
+}
+
+/* Activity Log */
+.activity-item {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #e3e6f0;
+    font-size: 0.85rem;
+}
+
+.activity-item:last-child {
+    border-bottom: none;
+}
+
+.activity-time {
+    color: #858796;
+    font-size: 0.75rem;
+}
+
+/* Button Styles */
+.btn-lg {
+    font-size: 1.1rem;
+    padding: 0.75rem 1.5rem;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    transition: all 0.2s ease-in-out;
+}
+
+/* Chart Container */
+#viewersChart {
+    max-height: 300px;
+}
+
+/* Toast Notifications */
+.toast {
+    min-width: 300px;
+}
+
+/* Status Badges */
+.badge {
+    font-size: 0.75rem;
+    padding: 0.5rem 0.75rem;
+}
+
+/* Loading Animation */
+.loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(78, 115, 223, 0.3);
+    border-radius: 50%;
+    border-top-color: #4e73df;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* System Status Grid */
+.system-status {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.status-item {
+    text-align: center;
+    padding: 1rem;
+    background: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+}
+
+/* Connection Status */
+.connection-status {
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.connection-status.connected {
+    color: #1cc88a;
+}
+
+.connection-status.disconnected {
+    color: #e74a3b;
+}
+
+.connection-status i {
+    margin-right: 0.25rem;
+}
+
+/* Status indicators for various components */
+.status {
+    font-weight: 600;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.8rem;
+}
+
+.status.live, .status.active {
+    color: #1cc88a;
+    background-color: rgba(28, 200, 138, 0.1);
+}
+
+.status.offline, .status.inactive {
+    color: #e74a3b;
+    background-color: rgba(231, 74, 59, 0.1);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .card-body {
+        padding: 1rem;
+    }
+    
+    .btn-lg {
+        font-size: 1rem;
+        padding: 0.5rem 1rem;
+    }
+    
+    .h5 {
+        font-size: 1.1rem;
+    }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* Navbar Custom */
+.navbar-dark {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+}
+
+/* Card Hover Effects */
+.card:hover {
+    transform: translateY(-5px);
+    transition: all 0.3s ease-in-out;
+}
+
+/* Progress Bars */
+.progress {
+    height: 1rem;
+    border-radius: 0.5rem;
+}
+
+.progress-bar {
+    border-radius: 0.5rem;
+}
+
+/* Control Panel */
+.control-panel {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    border-radius: 1rem;
+    padding: 2rem;
+    margin: 1rem 0;
+}
+
+/* Statistics Cards */
+.stat-card {
+    background: white;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+}
+
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #4e73df;
+}
+
+.stat-label {
+    color: #858796;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}

@@ -1,0 +1,85 @@
+# YouTube Streaming Bot Configuration
+
+# YouTube API Settings
+youtube:
+  client_secrets_file: "config/client_secret.json"
+  api_key: "YOUR_YOUTUBE_API_KEY"
+  channel_id: "YOUR_CHANNEL_ID"
+  
+# Streaming Settings (Direct FFmpeg - No OBS Required)
+streaming:
+  stream_key: "YOUR_YOUTUBE_STREAM_KEY"
+  bitrate: 2500
+  resolution: "1920x1080"
+  fps: 30
+  input_source: "testsrc"  # Options: testsrc, webcam, screen, /dev/video0
+  audio_source: "default"  # Audio input device
+  encoding_preset: "fast"  # FFmpeg preset: ultrafast, superfast, veryfast, faster, fast, medium, slow
+  rtmp_server: "rtmp://a.rtmp.youtube.com/live2"
+  buffer_size: 5000  # Buffer size in KB
+  keyframe_interval: 2  # Keyframe interval in seconds
+  
+# Bot Settings
+bot:
+  # Comment Bot
+  comments:
+    enabled: true
+    min_delay: 30  # seconds
+    max_delay: 180
+    accounts_file: "config/accounts.json"
+    comments_file: "config/comments.json"
+    
+  # Viewer Bot
+  viewers:
+    enabled: true
+    min_viewers: 10
+    max_viewers: 50
+    session_duration: 300  # seconds
+    
+  # Engagement Bot
+  engagement:
+    auto_like: true
+    auto_subscribe: false
+    like_probability: 0.3
+    
+# Scheduler Settings
+scheduler:
+  enabled: true
+  timezone: "Asia/Jakarta"
+  streams:
+    - name: "Morning Stream"
+      time: "08:00"
+      duration: 120  # minutes
+      days: ["monday", "wednesday", "friday"]
+    - name: "Evening Stream"
+      time: "19:00"
+      duration: 180
+      days: ["tuesday", "thursday", "saturday"]
+      
+# Dashboard Settings
+dashboard:
+  host: "0.0.0.0"
+  port: 5000
+  debug: false
+  secret_key: "your-secret-key-here"
+  
+# Security Settings
+security:
+  rate_limiting: true
+  max_requests_per_minute: 60
+  ip_whitelist: []
+  
+# Logging Settings
+logging:
+  level: "INFO"
+  file: "logs/app.log"
+  max_file_size: "10MB"
+  backup_count: 5
+  
+# Proxy Settings (Optional)
+proxy:
+  enabled: false
+  rotation: true
+  providers:
+    - type: "http"
+      list_file: "config/proxies.txt"
