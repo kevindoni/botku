@@ -27,36 +27,76 @@ print_error() {
     echo -e "${RED}[ERROR]${NC} $1"
 }
 
-# Check if running as root
+# Check if running as root and handle appropriately
 if [ "$EUID" -eq 0 ]; then
-    print_error "Please do not run this script as root"
-    exit 1
+    print_warning "Running as root. Will create user 'botuser' for the application."
+    
+    # Create a non-root user for the application
+    if ! id "botuser" &>/dev/null; then
+        print_status "Creating user 'botuser'..."
+        useradd -m -s /bin/bash botuser
+        usermod -aG sudo botuser
+    fi
+    
+    # Set variables for root installation
+    APP_USER="botuser"
+    APP_HOME="/home/botuser"
+    INSTALL_AS_ROOT=true
+else
+    APP_USER="$USER"
+    APP_HOME="$HOME"
+    INSTALL_AS_ROOT=false
 fi
 
 # Update system
 print_status "Updating system packages..."
-sudo apt update && sudo apt upgrade -y
+if [ "$INSTALL_AS_ROOT" = true ]; then
+    apt update && apt upgrade -y
+else
+    sudo apt update && sudo apt upgrade -y
+fi
 
 # Install required packages
 print_status "Installing required packages..."
-sudo apt install -y \
-    python3 \
-    python3-pip \
-    python3-venv \
-    python3-dev \
-    git \
-    wget \
-    curl \
-    unzip \
-    software-properties-common \
-    apt-transport-https \
-    ca-certificates \
-    gnupg \
-    lsb-release
+if [ "$INSTALL_AS_ROOT" = true ]; then
+    apt install -y \
+        python3 \
+        python3-pip \
+        python3-venv \
+        python3-dev \
+        git \
+        wget \
+        curl \
+        unzip \
+        software-properties-common \
+        apt-transport-https \
+        ca-certificates \
+        gnupg \
+        lsb-release
+else
+    sudo apt install -y \
+        python3 \
+        python3-pip \
+        python3-venv \
+        python3-dev \
+        git \
+        wget \
+        curl \
+        unzip \
+        software-properties-common \
+        apt-transport-https \
+        ca-certificates \
+        gnupg \
+        lsb-release
+fi
 
 # Install FFmpeg
 print_status "Installing FFmpeg..."
-sudo apt install -y ffmpeg
+if [ "$INSTALL_AS_ROOT" = true ]; then
+    apt install -y ffmpeg
+else
+    sudo apt install -y ffmpeg
+fi
 
 # Verify FFmpeg installation
 if command -v ffmpeg &> /dev/null; then
@@ -68,36 +108,76 @@ fi
 
 # Install Chrome/Chromium for bot functionality
 print_status "Installing Chromium browser..."
-sudo apt install -y chromium-browser
+if [ "$INSTALL_AS_ROOT" = true ]; then
+    apt install -y chromium-browser
+else
+    sudo apt install -y chromium-browser
+fi
 
 # Install Xvfb for headless display
 print_status "Installing Xvfb for headless display..."
-sudo apt install -y xvfb
+if [ "$INSTALL_AS_ROOT" = true ]; then
+    apt install -y xvfb
+else
+    sudo apt install -y xvfb
+fi
 
 # Install additional dependencies for video processing
 print_status "Installing additional video processing libraries..."
-sudo apt install -y \
-    libavcodec-extra \
-    libavformat-dev \
-    libavfilter-dev \
-    libavdevice-dev \
-    x11-utils \
-    pulseaudio \
-    alsa-utils
+if [ "$INSTALL_AS_ROOT" = true ]; then
+    apt install -y \
+        libavcodec-extra \
+        libavformat-dev \
+        libavfilter-dev \
+        libavdevice-dev \
+        x11-utils \
+        pulseaudio \
+        alsa-utils
+else
+    sudo apt install -y \
+        libavcodec-extra \
+        libavformat-dev \
+        libavfilter-dev \
+        libavdevice-dev \
+        x11-utils \
+        pulseaudio \
+        alsa-utils
+fi
 
 # Create application directory
-APP_DIR="$HOME/youtube-streaming-bot"
+APP_DIR="$APP_HOME/botku"
 print_status "Creating application directory: $APP_DIR"
-mkdir -p "$APP_DIR"
-cd "$APP_DIR"
 
-# Create Python virtual environment
-print_status "Creating Python virtual environment..."
-python3 -m venv venv
-source venv/bin/activate
-
-# Upgrade pip
-print_status "Upgrading pip..."
+if [ "$INSTALL_AS_ROOT" = true ]; then
+    mkdir -p "$APP_DIR"
+    chown -R $APP_USER:$APP_USER "$APP_DIR"
+    # Switch to the botuser for the rest of the installation
+    print_status "Switching to user '$APP_USER' for application setup..."
+    su - $APP_USER << EOSU
+    cd "$APP_DIR"
+    
+    # Create Python virtual environment
+    echo "Creating Python virtual environment..."
+    python3 -m venv venv
+    source venv/bin/activate
+    
+    # Upgrade pip
+    echo "Upgrading pip..."
+    pip install --upgrade pip
+EOSU
+else
+    mkdir -p "$APP_DIR"
+    cd "$APP_DIR"
+    
+    # Create Python virtual environment
+    print_status "Creating Python virtual environment..."
+    python3 -m venv venv
+    source venv/bin/activate
+    
+    # Upgrade pip
+    print_status "Upgrading pip..."
+    pip install --upgrade pip
+fi
 pip install --upgrade pip
 
 # Install Python packages
