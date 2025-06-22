@@ -34,17 +34,39 @@ cd botku
 ```
 
 ### 2. Install Dependencies
+
+**📋 Opsi Instalasi:**
+
+| Script | Deskripsi | Untuk |
+|--------|-----------|-------|
+| `quick-install.sh` | ⚡ Instalasi cepat dan sederhana | Root & Non-root |
+| `install.sh` | 🔧 Instalasi lengkap dengan konfigurasi | Non-root (auto-handle root) |
+| `install-root.sh` | 🛡️ Instalasi khusus root dengan user dedicated | Root VPS |
+
+**Pilihan A: Quick Install (Direkomendasikan untuk VPS)**
 ```bash
-# Untuk instalasi otomatis, gunakan script yang disediakan:
+chmod +x quick-install.sh
+./quick-install.sh
+```
+
+**Pilihan B: Standard Install**
+```bash
 chmod +x install.sh
 ./install.sh
+```
 
-# Atau instalasi manual:
+**Pilihan C: Root Install dengan Dedicated User**
+```bash
+chmod +x install-root.sh
+./install-root.sh
+```
+
+**Pilihan D: Manual Install**
+```bash
 # Install sistem dependencies
 sudo apt update
 sudo apt install python3 python3-pip python3-venv
-sudo apt install chromium-browser ffmpeg
-sudo apt install xvfb # untuk headless display
+sudo apt install chromium-browser ffmpeg xvfb
 
 # Create virtual environment
 python3 -m venv venv
@@ -71,6 +93,29 @@ nano .env
 2. Enable YouTube Data API v3
 3. Buat credentials (OAuth 2.0)
 4. Download client_secret.json ke folder config/
+
+## Script Instalasi
+
+### 🚀 quick-install.sh
+Script instalasi tercepat yang bekerja di direktori saat ini:
+- ✅ Support root dan non-root user
+- ✅ Instalasi minimal namun lengkap
+- ✅ Otomatis setup ChromeDriver
+- ✅ Konfigurasi firewall
+
+### 🔧 install.sh  
+Script instalasi standar dengan fitur lengkap:
+- ✅ Auto-detect root/non-root
+- ✅ Membuat user dedicated jika root
+- ✅ Setup systemd service
+- ✅ Konfigurasi supervisor
+
+### 🛡️ install-root.sh
+Script khusus untuk instalasi sebagai root di VPS:
+- ✅ Membuat user 'botuser' dedicated
+- ✅ Setup environment lengkap
+- ✅ Konfigurasi systemd service
+- ✅ Nginx dan firewall setup
 
 ## Penggunaan
 
@@ -125,6 +170,11 @@ botku/
 ├── requirements.txt   # Python dependencies
 ├── Dockerfile        # Docker configuration
 ├── docker-compose.yml # Docker Compose
+├── install.sh        # Standard installation script
+├── install-root.sh   # Root installation script
+├── quick-install.sh  # Quick installation script
+├── start.sh         # Application start script
+├── dev.sh           # Development script
 └── logs/             # Log files
 ```
 
@@ -157,7 +207,45 @@ Bot dapat dikonfigurasi untuk:
 
 ## Troubleshooting
 
-Lihat file `docs/troubleshooting.md` untuk solusi masalah umum.
+### Common Issues
+
+**1. Permission Denied saat menjalankan script:**
+```bash
+chmod +x *.sh
+./quick-install.sh
+```
+
+**2. ChromeDriver tidak ditemukan:**
+```bash
+# Install ulang ChromeDriver
+sudo apt install chromium-browser
+# Script akan otomatis download ChromeDriver yang sesuai
+```
+
+**3. FFmpeg tidak ditemukan:**
+```bash
+sudo apt update
+sudo apt install ffmpeg
+ffmpeg -version  # Verify installation
+```
+
+**4. Virtual environment issues:**
+```bash
+rm -rf venv
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+**5. Port 5000 sudah digunakan:**
+```bash
+# Edit config/config.yaml dan ubah port
+nano config/config.yaml
+# Atau jalankan dengan port berbeda
+python src/app.py --port 5001
+```
+
+Lihat file `docs/troubleshooting.md` untuk solusi masalah umum lainnya.
 
 ## Contributing
 
