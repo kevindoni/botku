@@ -1,7 +1,10 @@
 # Flask Web Framework
 flask==2.3.3
 flask-socketio==5.3.6
-eventlet==0.33.3
+
+# Alternative to eventlet for Python 3.12 compatibility
+# eventlet==0.33.3  # Disabled due to Python 3.12 SSL issues
+gevent==23.9.1
 
 # Google APIs
 google-api-python-client==2.110.0

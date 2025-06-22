@@ -71,7 +71,10 @@ pip install --no-cache-dir gunicorn==21.2.0 || print_warning "Gunicorn installat
 # Install potentially problematic packages
 print_status "Installing optional packages..."
 pip install --no-cache-dir "numpy>=1.21.0" || print_warning "NumPy installation failed"
-pip install --no-cache-dir eventlet==0.33.3 || print_warning "Eventlet installation failed"
+
+# Use gevent instead of eventlet for Python 3.12 compatibility
+pip install --no-cache-dir gevent==23.9.1 || print_warning "Gevent installation failed"
+
 pip install --no-cache-dir "opencv-python>=4.5.0" || print_warning "OpenCV installation failed"
 pip install --no-cache-dir selenium==4.15.2 || print_warning "Selenium installation failed"
 

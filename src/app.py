@@ -34,9 +34,14 @@ class YouTubeStreamingApp:
         # Initialize Flask app
         self.app = Flask(__name__)
         self.app.secret_key = os.getenv('SECRET_KEY', 'youtube-streaming-bot-secret-key')
-        
-        # Initialize SocketIO for real-time updates
-        self.socketio = SocketIO(self.app, cors_allowed_origins="*")
+          # Initialize SocketIO for real-time updates (compatible with Python 3.12)
+        self.socketio = SocketIO(
+            self.app, 
+            cors_allowed_origins="*",
+            async_mode='threading',
+            logger=False,
+            engineio_logger=False
+        )
         
         # Load configuration
         self.config = self.load_config()
