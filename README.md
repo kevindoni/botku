@@ -215,21 +215,41 @@ chmod +x *.sh
 ./quick-install.sh
 ```
 
-**2. ChromeDriver tidak ditemukan:**
+**2. Error setuptools/numpy saat instalasi Python packages:**
+```bash
+# Install system dependencies first
+sudo apt update
+sudo apt install python3-dev python3-setuptools build-essential libhdf5-dev
+
+# Recreate virtual environment
+rm -rf venv
+python3 -m venv venv
+source venv/bin/activate
+
+# Install setuptools first
+pip install --upgrade pip setuptools wheel
+
+# Install packages one by one if needed
+pip install --no-cache-dir flask==2.3.3
+pip install --no-cache-dir "numpy>=1.21.0"
+pip install --no-cache-dir "opencv-python>=4.5.0"
+```
+
+**3. ChromeDriver tidak ditemukan:**
 ```bash
 # Install ulang ChromeDriver
 sudo apt install chromium-browser
 # Script akan otomatis download ChromeDriver yang sesuai
 ```
 
-**3. FFmpeg tidak ditemukan:**
+**4. FFmpeg tidak ditemukan:**
 ```bash
 sudo apt update
 sudo apt install ffmpeg
 ffmpeg -version  # Verify installation
 ```
 
-**4. Virtual environment issues:**
+**5. Virtual environment issues:**
 ```bash
 rm -rf venv
 python3 -m venv venv
@@ -237,12 +257,19 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-**5. Port 5000 sudah digunakan:**
+**6. Port 5000 sudah digunakan:**
 ```bash
 # Edit config/config.yaml dan ubah port
 nano config/config.yaml
 # Atau jalankan dengan port berbeda
 python src/app.py --port 5001
+```
+
+**7. Masalah dengan snap packages (Chromium):**
+```bash
+# Install chromium dari apt instead of snap
+sudo snap remove chromium
+sudo apt install chromium-browser
 ```
 
 Lihat file `docs/troubleshooting.md` untuk solusi masalah umum lainnya.

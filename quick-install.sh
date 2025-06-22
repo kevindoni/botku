@@ -37,12 +37,18 @@ $SUDO_CMD apt install -y \
     python3 \
     python3-pip \
     python3-venv \
+    python3-dev \
+    python3-setuptools \
+    build-essential \
     ffmpeg \
     chromium-browser \
     xvfb \
     git \
     curl \
-    unzip
+    unzip \
+    pkg-config \
+    libhdf5-dev \
+    libopencv-dev
 
 # Verify installations
 print_status "Verifying installations..."
@@ -55,12 +61,42 @@ print_status "Setting up Python environment..."
 python3 -m venv venv
 source venv/bin/activate
 
-# Upgrade pip
-pip install --upgrade pip
+# Upgrade pip and install setuptools first
+pip install --upgrade pip setuptools wheel
 
-# Install Python packages
+# Install system packages for Python dependencies
+print_status "Installing system packages for Python dependencies..."
+$SUDO_CMD apt install -y \
+    python3-numpy \
+    python3-opencv \
+    libopencv-dev \
+    python3-scipy
+
+# Install Python packages with fallback for problematic ones
 print_status "Installing Python dependencies..."
-pip install -r requirements.txt
+pip install --no-cache-dir flask==2.3.3
+pip install --no-cache-dir flask-socketio==5.3.6
+pip install --no-cache-dir eventlet==0.33.3
+pip install --no-cache-dir google-api-python-client==2.110.0
+pip install --no-cache-dir google-auth-httplib2==0.1.1
+pip install --no-cache-dir google-auth-oauthlib==1.1.0
+pip install --no-cache-dir selenium==4.15.2
+pip install --no-cache-dir requests==2.31.0
+pip install --no-cache-dir beautifulsoup4==4.12.2
+pip install --no-cache-dir schedule==1.2.0
+pip install --no-cache-dir psutil==5.9.6
+
+# Install NumPy and OpenCV separately to avoid conflicts
+print_status "Installing NumPy and OpenCV..."
+pip install --no-cache-dir "numpy>=1.21.0"
+pip install --no-cache-dir "opencv-python>=4.5.0"
+
+pip install --no-cache-dir pyyaml==6.0.1
+pip install --no-cache-dir python-dotenv==1.0.0
+pip install --no-cache-dir ffmpeg-python==0.2.0
+pip install --no-cache-dir aiohttp==3.9.0
+pip install --no-cache-dir websockets==12.0
+pip install --no-cache-dir gunicorn==21.2.0
 
 # Install ChromeDriver
 print_status "Installing ChromeDriver..."
