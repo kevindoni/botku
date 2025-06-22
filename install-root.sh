@@ -53,7 +53,6 @@ apt install -y \
     gnupg \
     lsb-release \
     ffmpeg \
-    chromium-browser \
     xvfb \
     libavcodec-extra \
     libavformat-dev \
@@ -63,7 +62,21 @@ apt install -y \
     pulseaudio \
     alsa-utils \
     supervisor \
-    nginx
+    nginx \
+    build-essential \
+    python3-setuptools \
+    xdg-utils \
+    desktop-file-utils
+
+# Handle Chromium installation properly
+print_status "Setting up Chromium browser..."
+if snap list chromium >/dev/null 2>&1; then
+    print_warning "Removing snap version of Chromium..."
+    snap remove chromium
+fi
+
+# Install chromium from apt repository  
+apt install -y chromium-browser
 
 # Verify FFmpeg installation
 if command -v ffmpeg &> /dev/null; then
@@ -140,12 +153,27 @@ EOSU
 
 # Download ChromeDriver for Selenium
 print_status "Installing ChromeDriver..."
-CHROME_VERSION=$(chromium-browser --version | awk '{print $2}' | cut -d'.' -f1)
-CHROMEDRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION")
-wget -O /tmp/chromedriver.zip "https://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VERSION}/chromedriver_linux64.zip"
-unzip /tmp/chromedriver.zip -d /usr/local/bin/
-chmod +x /usr/local/bin/chromedriver
-rm /tmp/chromedriver.zip
+# Get Chrome version safely
+CHROME_VERSION=$(chromium-browser --version 2>/dev/null | awk '{print $2}' | cut -d'.' -f1 2>/dev/null || echo "120")
+print_status "Detected Chrome version: $CHROME_VERSION"
+
+# Get ChromeDriver version with error handling
+CHROMEDRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION" 2>/dev/null || echo "120.0.6099.109")
+print_status "Using ChromeDriver version: $CHROMEDRIVER_VERSION"
+
+# Download and install ChromeDriver
+CHROMEDRIVER_URL="https://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VERSION}/chromedriver_linux64.zip"
+if wget -O /tmp/chromedriver.zip "$CHROMEDRIVER_URL" 2>/dev/null; then
+    unzip -o /tmp/chromedriver.zip -d /usr/local/bin/
+    chmod +x /usr/local/bin/chromedriver
+    rm -f /tmp/chromedriver.zip
+    print_status "ChromeDriver installed successfully"
+else
+    print_warning "ChromeDriver download failed, trying apt installation..."
+    apt install -y chromium-chromedriver 2>/dev/null || {
+        print_error "Could not install ChromeDriver automatically"
+    }
+fi
 
 # Create systemd service file
 print_status "Creating systemd service..."

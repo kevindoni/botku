@@ -41,14 +41,31 @@ $SUDO_CMD apt install -y \
     python3-setuptools \
     build-essential \
     ffmpeg \
-    chromium-browser \
     xvfb \
     git \
     curl \
     unzip \
     pkg-config \
     libhdf5-dev \
-    libopencv-dev
+    libopencv-dev \
+    xdg-utils \
+    ca-certificates \
+    wget
+
+# Remove snap chromium if installed and install apt version
+print_status "Setting up Chromium browser..."
+if snap list chromium >/dev/null 2>&1; then
+    print_warning "Removing snap version of Chromium..."
+    $SUDO_CMD snap remove chromium
+fi
+
+# Install chromium from apt repository
+$SUDO_CMD apt install -y chromium-browser
+
+# Fix chromium issues by installing proper desktop environment tools
+$SUDO_CMD apt install -y \
+    desktop-file-utils \
+    xdg-user-dirs
 
 # Verify installations
 print_status "Verifying installations..."
@@ -100,12 +117,45 @@ pip install --no-cache-dir gunicorn==21.2.0
 
 # Install ChromeDriver
 print_status "Installing ChromeDriver..."
-CHROME_VERSION=$(chromium-browser --version | awk '{print $2}' | cut -d'.' -f1)
-CHROMEDRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION")
-curl -L -o /tmp/chromedriver.zip "https://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VERSION}/chromedriver_linux64.zip"
-$SUDO_CMD unzip /tmp/chromedriver.zip -d /usr/local/bin/
-$SUDO_CMD chmod +x /usr/local/bin/chromedriver
-rm /tmp/chromedriver.zip
+# Get Chrome version more safely
+CHROME_VERSION=""
+if command -v chromium-browser >/dev/null 2>&1; then
+    # Try to get version without running the browser
+    CHROME_VERSION=$(chromium-browser --version 2>/dev/null | awk '{print $2}' | cut -d'.' -f1 2>/dev/null || echo "120")
+else
+    CHROME_VERSION="120"  # Default fallback
+fi
+
+print_status "Detected Chrome version: $CHROME_VERSION"
+
+# Download ChromeDriver with proper error handling
+CHROMEDRIVER_VERSION=""
+if [ ! -z "$CHROME_VERSION" ]; then
+    CHROMEDRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION" 2>/dev/null || echo "")
+fi
+
+# Fallback to latest stable if version detection fails
+if [ -z "$CHROMEDRIVER_VERSION" ]; then
+    print_warning "Using fallback ChromeDriver version..."
+    CHROMEDRIVER_VERSION="120.0.6099.109"
+fi
+
+print_status "Downloading ChromeDriver version: $CHROMEDRIVER_VERSION"
+
+# Download and install ChromeDriver
+CHROMEDRIVER_URL="https://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VERSION}/chromedriver_linux64.zip"
+if curl -L -f -o /tmp/chromedriver.zip "$CHROMEDRIVER_URL" 2>/dev/null; then
+    $SUDO_CMD unzip -o /tmp/chromedriver.zip -d /usr/local/bin/
+    $SUDO_CMD chmod +x /usr/local/bin/chromedriver
+    rm -f /tmp/chromedriver.zip
+    print_status "ChromeDriver installed successfully"
+else
+    print_warning "ChromeDriver download failed, trying alternative method..."
+    # Alternative: install via apt if available
+    $SUDO_CMD apt install -y chromium-chromedriver 2>/dev/null || {
+        print_error "Could not install ChromeDriver. You may need to install it manually."
+    }
+fi
 
 # Create directories
 print_status "Creating directories..."
