@@ -1,10 +1,11 @@
 #!/bin/bash
 
 # YouTube Streaming Bot Startup Script
-# For Ubuntu Server 24.04 LTS
+# Works from current directory
 
-# Configuration
-APP_DIR="/home/$USER/youtube-streaming-bot"
+# Get the directory where this script is located
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+APP_DIR="$SCRIPT_DIR"
 VENV_PATH="$APP_DIR/venv"
 LOG_DIR="$APP_DIR/logs"
 
